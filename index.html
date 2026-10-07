@@ -4,8 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dato">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-180.png">
 <meta name="theme-color" content="#F2F2F7">
-<title>Finanzas Pro · v37</title>
+<title>Dato · Tu dinero en orden</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -729,6 +733,10 @@ body.dark{--brown:#D2A67A}
 #authGate.is-open{display:flex}
 .auth-card{width:100%;max-width:380px;background:var(--surface);border:.5px solid var(--line);border-radius:18px;padding:28px 22px;display:flex;flex-direction:column;gap:16px}
 .auth-err{color:var(--red-text);font-size:13px;min-height:16px;text-align:center}
+.brand__logo{background:#fff!important;border:.5px solid var(--line);box-shadow:none!important;padding:5px}
+.brand__logo svg{width:100%;height:100%}
+.brand__logo.auth-logo{width:72px;height:72px;border-radius:18px;padding:12px;margin:0 auto}
+.brand__sub{font-size:11px}
 @media(max-width:700px){.pop-bg{background:rgba(0,0,0,.35)}.npop{left:0;right:0;bottom:0;top:auto;max-width:none;border-radius:16px 16px 0 0;padding:14px 14px calc(18px + var(--safe-bottom));max-height:80vh}}
 .chart-legend--static div{cursor:default;pointer-events:none;background:transparent;font-size:12px;color:var(--text-2)}
 .defer-sum{padding:12px;border-radius:12px;background:var(--fill-tertiary);font-size:14px}
@@ -1047,7 +1055,7 @@ body.vc-mode [data-vc-id].vc-selected > .vc-tag,body.vc-mode [data-vc-id]:hover 
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="brand"><div class="brand__logo">₣</div><div><div class="brand__name">Finanzas Pro</div><div class="brand__sub">v37</div></div></div>
+    <div class="brand"><div class="brand__logo"><svg viewBox="0 0 120 120" aria-hidden="true"><polyline points="16,94 43,70 73,78 104,24" fill="none" stroke="#34C759" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="94" r="8" fill="#FFCC00"/><circle cx="43" cy="70" r="8" fill="#FF9500"/><circle cx="104" cy="24" r="14" fill="#007AFF"/></svg></div><div><div class="brand__name">Dato</div><div class="brand__sub">Tu dinero en orden</div></div></div>
     <button class="nav-item is-active" data-nav="dashboard"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/></svg> Inicio</button>
     <button class="nav-item" data-nav="movements"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg> Movimientos</button>
     <button class="nav-item" data-nav="accounts"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg> Cuentas</button>
@@ -1464,10 +1472,16 @@ document.addEventListener('click',function(e){
     return;}
 },true);
 /* ============ v29 · FIN NUEVOS GRÁFICOS ============ */
-function buildFlowSeries(){const months=[];for(let i=5;i>=0;i--){const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-i);months.push({key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,label:d.toLocaleDateString('es-EC',{month:'short'}).replace('.','')});}
-  const ob=enabledAccounts().reduce((s,a)=>s+a.balance,0);const ri=[],re=[],pi=[],pe=[],fr2=[],fp=[];let cRI=0,cRE=0,cPI=0,cPE=0;
-  months.forEach(m=>{state.transactions.forEach(t=>{if(monthKey(t.date)!==m.key)return;if(!activeTx(t))return;if(t.type==='income')cRI+=t.amount;if(t.type==='expense')cRE+=t.amount+(t.fee||0);if(t.type==='transfer')cRE+=(t.fee||0);});state.planned.forEach(p=>{if(monthKey(p.date)!==m.key||p.done)return;if(p.type==='income')cPI+=p.amount;if(p.type==='expense')cPE+=p.amount;});ri.push(cRI);re.push(cRE);pi.push(cPI);pe.push(cPE);fr2.push(ob+cRI-cRE);fp.push(ob+cRI+cPI-cRE-cPE);});
-  const labels=months.map((m,i)=>({x:i,label:m.label}));return {labels,series:[{key:'flowReal',name:'Flujo real',color:'#007AFF',points:fr2.map((v,i)=>({x:i,y:v})),xLabels:labels},{key:'flowPlan',name:'Flujo planif.',color:'#5AC8FA',points:fp.map((v,i)=>({x:i,y:v})),xLabels:labels},{key:'incReal',name:'Ingresos reales',color:'#34C759',points:ri.map((v,i)=>({x:i,y:v})),xLabels:labels},{key:'incPlan',name:'Ingresos planif.',color:'#00C7BE',points:pi.map((v,i)=>({x:i,y:v})),xLabels:labels},{key:'expReal',name:'Gastos reales',color:'#FF3B30',points:re.map((v,i)=>({x:i,y:v})),xLabels:labels},{key:'expPlan',name:'Gastos planif.',color:'#FF9500',points:pe.map((v,i)=>({x:i,y:v})),xLabels:labels}]};}
+/* v37 · Flujo: saldo acumulado (real y planificado) + montos de cada mes (ingresos/gastos). Meses según DASHTF. */
+function buildFlowSeries(months){months=months||tfMonths(DASHTF.tf);
+  const ob=enabledAccounts().reduce((s,a)=>s+a.balance,0);
+  const realBal=upTo=>{let s=ob;state.transactions.forEach(t=>{if(!activeTx(t)||monthKey(t.date)>upTo)return;if(t.type==='income')s+=t.amount;else if(t.type==='expense')s-=t.amount+(t.fee||0);else if(t.type==='transfer')s-=(t.fee||0);});return s;};
+  const planNet=upTo=>{let s=0;state.planned.forEach(p=>{if(p.done||monthKey(p.date)>upTo)return;if(p.type==='income')s+=p.amount;if(p.type==='expense')s-=p.amount;});return s;};
+  const fr2=months.map(m=>realBal(m.key));const fp=months.map((m,i)=>fr2[i]+planNet(m.key));
+  const ri=[],re=[],pi=[],pe=[];
+  months.forEach(m=>{let a=0,b=0,c=0,d=0;state.transactions.forEach(t=>{if(monthKey(t.date)!==m.key||!activeTx(t))return;if(t.type==='income')a+=t.amount;if(t.type==='expense')b+=t.amount+(t.fee||0);if(t.type==='transfer')b+=(t.fee||0);});state.planned.forEach(p=>{if(monthKey(p.date)!==m.key||p.done)return;if(p.type==='income')c+=p.amount;if(p.type==='expense')d+=p.amount;});ri.push(a);re.push(b);pi.push(c);pe.push(d);});
+  const labels=months.map((m,i)=>({x:i,label:m.label}));
+  return {labels,monthly:{labels:months.map(m=>m.label),ri,re,pi,pe},series:[{key:'flowReal',name:'Flujo real',color:'#007AFF',points:fr2.map((v,i)=>({x:i,y:v})),xLabels:labels},{key:'flowPlan',name:'Flujo planif.',color:'#5AC8FA',points:fp.map((v,i)=>({x:i,y:v})),xLabels:labels}]};}
 let toastT;function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('is-open');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('is-open'),2200);}
 const overlay=$('#overlay');const modalEl=$('#modal');let currentLoanId=null;
 function openModal(title,html,onMount,opts={}){window.__catState.onSelect=null;window.__catState.onSubSelect=null;modalEl.innerHTML=`<div class="modal__head"><div class="modal__title">${escapeHtml(title)}</div><button class="modal__close" id="modalClose" aria-label="Cerrar">✕</button></div><div id="modalBody">${html}</div>`;overlay.classList.toggle('overlay--full',!!opts.full);overlay.classList.add('is-open');document.body.classList.add('modal-open');$('#modalClose').onclick=closeModal;if(onMount)onMount(modalEl);}
@@ -1491,7 +1505,7 @@ function renderDashboard(){const netWorth=totalNetWorth();const totalAccounts=en
   const todayRealTxs=state.transactions.filter(t=>t.date===tk).map(t=>({...t,_isPlanned:false}));const todayPlanTxs=state.planned.filter(p=>!p.done&&p.date===tk).map(p=>({...p,_isPlanned:true}));const todayMovs=[...todayRealTxs,...todayPlanTxs];
   const reco=recommendCard();const upcoming=upcomingCardPayments().slice(0,3);const health=calcFinancialHealth();const plannedActive=state.planned.filter(p=>!p.done);const overdue=plannedActive.filter(isOverdue).sort((a,b)=>a.date.localeCompare(b.date));
   let recentFiltered=state.transactions.filter(t=>mvMatchDate(t.date,'dashboard'));recentFiltered=applyMvSort(recentFiltered,'dashboard');const recent=recentFiltered.slice(0,5);
-  const flow=buildFlowSeries();const flowChartId='flowAccumulated';const visibleFlow=visibleSeries(flowChartId,flow.series);
+  const flow=buildFlowSeries(tfMonths(DASHTF.tf));const flowChartId='flowAccumulated';const visibleFlow=visibleSeries(flowChartId,flow.series);
   const weekBars=(()=>{const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d);}return days.map(d=>{const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;return {label:['D','L','M','X','J','V','S'][d.getDay()],value:activeTxs.filter(t=>t.date===k&&t.type==='expense').reduce((s,t)=>s+t.amount,0)};});})();
   const weekTotal=weekBars.reduce((s,b)=>s+b.value,0);
   const nowD=new Date();const dow=nowD.getDay();const offset=dow===0?-6:1-dow;const weekStart=new Date(nowD);weekStart.setDate(nowD.getDate()+offset);const weekEnd=new Date(weekStart);weekEnd.setDate(weekStart.getDate()+6);
@@ -1512,7 +1526,8 @@ function renderDashboard(){const netWorth=totalNetWorth();const totalAccounts=en
         <div class="panel"><div class="panel__head"><div><div class="panel__title">Real vs Planificado</div><div class="panel__sub">Mes anterior · actual · próximo</div></div></div>${chartRealVsPlanned({height:320})}</div>
     <div class="panel"><div class="panel__head"><div><div class="panel__title">Gastos por categoría</div><div class="panel__sub">Mes actual · Top 10</div></div></div>${(function(){var data=getTopCategoriesMonth(curMonth(),10);if(!data.length)return '<div class="empty">'+ICONS.chartEmpty+'<span>Sin gastos este mes</span></div>';var visible=data.filter(function(d){return !isSeriesHidden('dashTopCats',d.key);});var total=visible.reduce(function(s,c){return s+c.value;},0);return chartWithSideLegend(chartDonut(visible,{size:220,centerLabel:'Total',centerValue:fmtShort(total)}),data,'dashTopCats');})()}</div>
     <div class="dash-pair">
-      <div class="panel"><div class="panel__head"><div><div class="panel__title">Flujo acumulado</div><div class="panel__sub">Toca la leyenda para ocultar</div></div></div>${chartLine(visibleFlow,{height:340,showArea:false})}${legendHTML(flowChartId,flow.series)}</div>
+      <div class="panel"><div class="panel__head"><div><div class="panel__title">Flujo acumulado</div><div class="panel__sub">Saldo al cierre de cada mes · ${tfLabel(DASHTF.tf)}</div></div><div class="fbar">${fbtn('dash_time',FI.time,DASHTF.tf.n!==6,'Periodo')}</div></div>${chartLine(visibleFlow,{height:320,showArea:false})}${legendHTML(flowChartId,flow.series)}</div>
+      <div class="panel"><div class="panel__head"><div><div class="panel__title">Ingresos y gastos por mes</div><div class="panel__sub">Monto de cada mes · ${tfLabel(DASHTF.tf)}</div></div><div class="fbar">${fbtn('dash_time',FI.time,DASHTF.tf.n!==6,'Periodo')}</div></div>${chartMonthlyFlow(flow.monthly,{height:300})}</div>
       <div class="panel" data-goto="analytics" style="cursor:pointer"><div class="panel__head"><div><div class="panel__title">Salud financiera</div><div class="panel__sub">${health.score}/100</div></div></div><div class="gauge-wrap">${chartHealthGauge(health.score)}</div><div class="gauge-stats" style="margin-top:var(--sp-3)">${health.parts.map(p=>`<div class="gauge-stat"><div class="gauge-stat__label">${escapeHtml(p.label)}</div><div class="gauge-stat__val" style="color:${p.color}">${p.value}<span style="color:var(--muted);font-size:var(--fs-xs)"> / ${p.max}</span></div><div class="gauge-stat__bar"><div style="width:${(p.value/p.max)*100}%;background:${p.color}"></div></div></div>`).join('')}</div></div>
     </div>
     ${todayHTML}
@@ -1715,7 +1730,7 @@ function buildLoansEvolutionChart(){if(!state.loans.length)return '';
   const currentYear=new Date().getFullYear();const loansData=state.loans.map(l=>{const sy=parseISO(l.startDate).getFullYear();const ey=parseISO(addMonths(l.startDate,l.termMonths)).getFullYear();return {loan:l,startYear:sy,endYear:ey};});
   const minYear=Math.min(...loansData.map(d=>d.startYear));const maxYear=Math.max(...loansData.map(d=>d.endYear));const chartId='loansChart';
   const allSeries=loansData.map(({loan,startYear})=>{const am=amortizeLoan(loan);const pts=[];for(let y=startYear;y<=maxYear;y++){const mfs=(y-startYear)*12;if(mfs>loan.termMonths)break;pts.push({x:y,y:am.rows[Math.min(mfs,loan.termMonths-1)]?.balance??0});}return {key:loan.id,name:loan.name,color:loan.color,points:pts};});
-  const xLabels=[];for(let y=minYear;y<=maxYear;y++)xLabels.push({x:y,label:String(y).slice(-2)});
+  const xLabels=loanXLabels(minYear,maxYear,currentYear);
   const seriesWithLabels=allSeries.map(s=>({...s,xLabels}));const visible=seriesWithLabels.filter(sr=>!isSeriesHidden(chartId,sr.key));
   const yearLines=[];for(let y=minYear;y<=maxYear;y++)yearLines.push(y);
   const verticalLines=[];if(state.settings.showCurrentYearLine!==false&&currentYear>=minYear&&currentYear<=maxYear)verticalLines.push({x:currentYear,color:'#FF3B30',strong:true});
@@ -1738,7 +1753,7 @@ function openLoanDetail(id,keep){const l=state.loans.find(x=>x.id===id);if(!l)re
   const capPagado=am.rows.filter(r=>paidMap[r.n]!==undefined).reduce((s,r)=>s+r.capital,0);const proximoPago=loanDue(l,focN);const cuentaPago=l.paymentAccountId?getAccount(l.paymentAccountId):null;
   const currentYear=new Date().getFullYear();const startYear=parseISO(l.startDate).getFullYear();const endYear=parseISO(addMonths(l.startDate,l.termMonths)).getFullYear();
   const pts=[];for(let y=startYear;y<=endYear;y++){const mfs=(y-startYear)*12;if(mfs>l.termMonths)break;pts.push({x:y,y:am.rows[Math.min(mfs,l.termMonths-1)]?.balance??0});}
-  const xLabels=[];for(let y=startYear;y<=endYear;y++)xLabels.push({x:y,label:String(y).slice(-2)});
+  const xLabels=loanXLabels(startYear,endYear,currentYear);
   const chartIdEvo='loanEvo';const seriesEvo=[{key:l.id,name:'Saldo',color:l.color,points:pts,xLabels}];const yearLines=[];for(let y=startYear;y<=endYear;y++)yearLines.push(y);
   const años=Math.ceil(l.termMonths/12);const groupedByYear=[];for(let y=0;y<años;y++){let iS=0,cS=0,coS=0;for(let m=y*12;m<Math.min((y+1)*12,l.termMonths);m++){iS+=am.rows[m].interest;cS+=am.rows[m].capital;coS+=am.rows[m].cost;}groupedByYear.push({label:'A'+(y+1),interes:iS,capital:cS,costos:coS});}
   const chartIdYear='loanYear';const seriesYear=[{key:'capital',color:'#34C759',name:'Capital'},{key:'interes',color:'#FF9500',name:'Interés'}];const visibleYear=seriesYear.filter(sr=>!isSeriesHidden(chartIdYear,sr.key));
@@ -2400,7 +2415,7 @@ async function cloudInit(){if(!window.supabase){setCloudStatus('nolib');return;}
 ['visibilitychange','online','focus'].forEach(ev=>(ev==='visibilitychange'?document:window).addEventListener(ev,()=>{if(ev==='visibilitychange'&&document.hidden)return;if(cloud.ready){if(cloudDirty()&&!cloud.conflict)cloudPush();else cloudPull();}}));
 function hideAuthGate(){const g=$('#authGate');if(g)g.classList.remove('is-open');}
 function showAuthGate(){let g=$('#authGate');if(!g){g=document.createElement('div');g.id='authGate';document.body.appendChild(g);}
-  g.innerHTML=`<form class="auth-card" id="authForm" autocomplete="on"><div class="brand__logo" style="margin:0 auto">₣</div><div style="text-align:center"><div style="font-size:20px;font-weight:700;letter-spacing:-.02em">Finanzas Pro</div><div style="color:var(--muted);font-size:13px;margin-top:2px">Inicia sesión para ver y sincronizar tus datos</div></div><label class="field" style="margin:0"><span>Correo</span><input type="email" id="authEmail" autocomplete="username" required></label><label class="field" style="margin:0"><span>Contraseña</span><input type="password" id="authPass" autocomplete="current-password" required></label><div class="auth-err" id="authErr"></div><button class="btn btn--primary" type="submit" id="authBtn" style="justify-content:center;padding:var(--sp-4)">Entrar</button></form>`;
+  g.innerHTML=`<form class="auth-card" id="authForm" autocomplete="on"><div class="brand__logo auth-logo"><svg viewBox="0 0 120 120" aria-hidden="true"><polyline points="16,94 43,70 73,78 104,24" fill="none" stroke="#34C759" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="94" r="8" fill="#FFCC00"/><circle cx="43" cy="70" r="8" fill="#FF9500"/><circle cx="104" cy="24" r="14" fill="#007AFF"/></svg></div><div style="text-align:center"><div style="font-size:26px;font-weight:700;letter-spacing:-.03em">Dato</div><div style="color:var(--text-2);font-size:14px;margin-top:2px">Tu dinero en orden</div><div style="color:var(--muted);font-size:12px;margin-top:10px">Inicia sesión para ver y sincronizar tus datos</div></div><label class="field" style="margin:0"><span>Correo</span><input type="email" id="authEmail" autocomplete="username" required></label><label class="field" style="margin:0"><span>Contraseña</span><input type="password" id="authPass" autocomplete="current-password" required></label><div class="auth-err" id="authErr"></div><button class="btn btn--primary" type="submit" id="authBtn" style="justify-content:center;padding:var(--sp-4)">Entrar</button></form>`;
   g.classList.add('is-open');
   $('#authForm').onsubmit=async e=>{e.preventDefault();const btn=$('#authBtn'),err=$('#authErr');err.textContent='';btn.disabled=true;btn.textContent='Entrando…';
     try{const {data,error}=await cloud.sb.auth.signInWithPassword({email:$('#authEmail').value.trim(),password:$('#authPass').value});
@@ -2418,6 +2433,28 @@ FB.cloud=(el)=>openNPop(el,'Nube',(body,refresh)=>{
     else if(a==='out'){closeNPop();try{await cloud.sb.auth.signOut();}catch(e){}}
     else if(a==='login'){closeNPop();if(cloud.sb)showAuthGate();else cloudInit();}});});
 setTimeout(cloudInit,0);
+/* ============ v37 · Inicio: periodo del flujo + barras mensuales; años clave en "Evolución del saldo" (móvil) ============ */
+const DASHTF={tf:{n:6,years:[],months:[]}};
+FB.dash_time=el=>popTime(el,DASHTF.tf,()=>{if(currentView==='dashboard')renderDashboard();});
+function chartMonthlyFlow(d,{height=300}={}){const n=d.labels.length;if(!n)return emptyChart();
+  const fs=11,W=computeViewBoxWidth(n,CW,(window.innerWidth<=640?58:84)),H=height;const pad={t:24,r:16,b:40,l:62};const iW=W-pad.l-pad.r,iH=H-pad.t-pad.b;
+  const max=Math.max(...d.ri.map((v,i)=>v+d.pi[i]),...d.re.map((v,i)=>v+d.pe[i]),1);const step=iW/n,bw=Math.min(step*0.32,34),gap=4;const pid='mf'+Math.random().toString(36).slice(2,7);const base=pad.t+iH;
+  let s=`<svg viewBox="0 0 ${W} ${H}" class="chart" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Ingresos y gastos por mes"><defs><pattern id="${pid}g" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(-45)"><rect width="8" height="8" fill="#34C759" fill-opacity="0.12"/><line x1="0" y1="0" x2="0" y2="8" stroke="#34C759" stroke-width="2.5" stroke-opacity="0.85"/></pattern><pattern id="${pid}r" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(-45)"><rect width="8" height="8" fill="#FF3B30" fill-opacity="0.12"/><line x1="0" y1="0" x2="0" y2="8" stroke="#FF3B30" stroke-width="2.5" stroke-opacity="0.85"/></pattern></defs>`;
+  for(let i=0;i<=4;i++){const y=pad.t+iH*i/4;s+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y}" y2="${y}" class="grid-line"/><text x="${pad.l-6}" y="${y+4}" text-anchor="end" class="axis" style="font-size:${fs}px">${fmtShort(max*(1-i/4))}</text>`;}
+  for(let i=0;i<n;i++){const cx=pad.l+step*i+step/2;const ix=cx-bw-gap/2,ex=cx+gap/2;const hr=d.ri[i]/max*iH,hp=d.pi[i]/max*iH,er=d.re[i]/max*iH,ep=d.pe[i]/max*iH;
+    if(d.ri[i]>0)s+=`<rect x="${ix}" y="${base-hr}" width="${bw}" height="${Math.max(hr,1)}" rx="3" fill="#34C759"/>`;
+    if(d.pi[i]>0)s+=`<rect x="${ix}" y="${base-hr-hp}" width="${bw}" height="${hp}" rx="3" fill="url(#${pid}g)"/>`;
+    if(d.re[i]>0)s+=`<rect x="${ex}" y="${base-er}" width="${bw}" height="${Math.max(er,1)}" rx="3" fill="#FF3B30"/>`;
+    if(d.pe[i]>0)s+=`<rect x="${ex}" y="${base-er-ep}" width="${bw}" height="${ep}" rx="3" fill="url(#${pid}r)"/>`;
+    s+=`<text x="${cx}" y="${H-14}" text-anchor="middle" class="axis" style="font-size:${fs}px">${escapeHtml(d.labels[i])}</text>`;}
+  const lg=`<div class="chart-legend chart-legend--static"><div><i style="background:#34C759"></i>Ingresos reales</div><div><i style="background:#FF3B30"></i>Gastos reales</div><div><i style="background:repeating-linear-gradient(-45deg,#34C759,#34C759 3px,rgba(52,199,89,.12) 3px,rgba(52,199,89,.12) 6px)"></i>Ingresos planif.</div><div><i style="background:repeating-linear-gradient(-45deg,#FF3B30,#FF3B30 3px,rgba(255,59,48,.12) 3px,rgba(255,59,48,.12) 6px)"></i>Gastos planif.</div></div>`;
+  return fr(s+'</svg>')+lg;}
+/* En móvil solo se rotulan el año de inicio, el de fin y el actual (las líneas verticales se dibujan todas) */
+function loanXLabels(a,b,cur){if(window.innerWidth>700){const all=[];for(let y=a;y<=b;y++)all.push({x:y,label:String(y).slice(-2)});return all;}
+  const keys=new Set([a,b]);if(cur>=a&&cur<=b)keys.add(cur);const ks=[...keys].sort((x,y)=>x-y);const pxYear=(CW-86)/((b-a)||1);const keep=[];
+  ks.forEach(y=>{if(!keep.length||(y-keep[keep.length-1])*pxYear>=40)keep.push(y);});
+  if(keep[keep.length-1]!==b){while(keep.length>1&&(b-keep[keep.length-1])*pxYear<40)keep.pop();keep.push(b);}
+  return keep.map(y=>({x:y,label:String(y)}));}
 $('#btnAdd').onclick=()=>openTxForm();
 $('#btnTransfer').onclick=()=>openTransferForm();
 applyTheme();
