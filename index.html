@@ -3135,6 +3135,7 @@ function v42RenderCats(){const v=$('#view-categories');if(!v)return;if(V42C.mana
   $$('[data-v42tog]',v).forEach(h=>h.onclick=e=>{if(e.target.closest('[data-v42bud],[data-v52plan]'))return;const id=h.dataset.v42tog;if(e.target.closest('[data-v42exp]')||id.startsWith('__')){V42C.open[id]=!V42C.open[id];renderCategories();return;}v42SubList(type,id,'*');});
   $$('[data-v52plan]',v).forEach(b=>b.onclick=e=>{e.stopPropagation();const [g,s]=b.dataset.v52plan.split('|');v52Plan(type,g,s);});
   $$('[data-v52per]',v).forEach(b=>b.onclick=()=>{V42C.period=b.dataset.v52per;renderCategories();});
+  $$('[data-v42exp]',v).forEach(b=>b.onclick=e=>{e.stopPropagation();const id=b.dataset.v42exp;V42C.open[id]=!V42C.open[id];renderCategories();});
   $$('[data-v42bud]',v).forEach(b=>b.onclick=e=>{e.stopPropagation();if(V42C.period==='year'){const [g,s]=b.dataset.v42bud.split('|');v52Plan(type,g,s);return;}const [g,s]=b.dataset.v42bud.split('|');v42BudModal(type,g,s);});
   $$('[data-v42sub]',v).forEach(el=>el.onclick=e=>{if(e.target.closest('[data-v42bud]'))return;const [g,s]=el.dataset.v42sub.split('|');v42SubList(type,g,s);});
   const sb=$('#v42SelBtn',v);if(sb)sb.onclick=()=>openPop(sb,{key:'v42sel',title:'Categoría',items:keys.map(k=>({v:k.g+'|'+k.s,l:k.l.trim()})),sel:V42C.chartKey,onApply:x=>{V42C.chartKey=x;renderCategories();}});
